@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TAPAK DPD PKS LEBAK</title>
+
+    <!-- PWA Setup & Metadata -->
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#070913">
+    <link rel="icon" type="image/png" href="./logo.png">
+    <link rel="apple-touch-icon" href="./logo.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description"
+        content="Sistem Manajemen HRD Tilawah Al-Qur'an dan Pembinaan UPA Yayasan Islam Qudwatul Ummah Lebak">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #070913;
+            color: #f8fafc;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Loading Screen Background & Effects */
+        .loading-wrap {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 24px;
+            z-index: 5;
+            background: radial-gradient(circle at 50% 30%, rgba(14, 165, 233, 0.15) 0%, transparent 60%),
+                radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.12) 0%, transparent 60%),
+                #070913;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+
+        .loading-wrap.is-hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-logo-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 24px;
+            overflow: hidden;
+            margin-bottom: 22px;
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.35), 0 10px 25px rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            animation: pulseGlow 2.5s infinite alternate ease-in-out;
+            background: #0f172a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading-logo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @keyframes pulseGlow {
+            0% {
+                transform: scale(1);
+                box-shadow: 0 0 25px rgba(56, 189, 248, 0.3), 0 10px 25px rgba(0, 0, 0, 0.6);
+            }
+
+            100% {
+                transform: scale(1.04);
+                box-shadow: 0 0 45px rgba(56, 189, 248, 0.55), 0 15px 30px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .spinner-ring {
+            width: 44px;
+            height: 44px;
+            border: 3.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: #38bdf8;
+            border-right-color: #818cf8;
+            animation: spin 0.85s cubic-bezier(0.5, 0.1, 0.4, 0.9) infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+
+        .loading-subtitle {
+            font-size: 13px;
+            color: #94a3b8;
+            max-width: 320px;
+            line-height: 1.45;
+        }
+
+        .loading-fallback-bar {
+            margin-top: 24px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn-reload {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-reload:hover {
+            background: rgba(56, 189, 248, 0.25);
+            color: #ffffff;
+            border-color: #38bdf8;
+        }
+
+        .link-direct {
+            font-size: 11.5px;
+            color: #64748b;
+            text-decoration: underline;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .link-direct:hover {
+            color: #94a3b8;
+        }
+
+        /* Iframe App Container */
+        iframe {
+            border: none;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            background: transparent;
+        }
+
+        /* PWA Install Banner (ScrollX Dark Glassmorphic Theme) */
+        #pwa-banner {
+            display: none;
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 36px);
+            max-width: 440px;
+            background: rgba(15, 23, 42, 0.94);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 14px 18px;
+            border-radius: 20px;
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7), 0 0 25px rgba(56, 189, 248, 0.2);
+            z-index: 99999;
+            align-items: center;
+            justify-content: space-between;
+            animation: slideUpBanner 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideUpBanner {
+            from {
+                opacity: 0;
+                transform: translate(-50%, 30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        .pwa-banner-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pwa-banner-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: #070913;
+        }
+
+        .pwa-banner-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pwa-banner-text h4 {
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 13.5px;
+            margin-bottom: 2px;
+        }
+
+        .pwa-banner-text p {
+            font-size: 11px;
+            color: #94a3b8;
+            line-height: 1.3;
+        }
+
+        .pwa-banner-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-pwa-install {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-pwa-install:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+
+        .btn-pwa-close {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 13px;
+            cursor: pointer;
+            color: #cbd5e1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-pwa-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Executive Loading Screen -->
+    <div class="loading-wrap" id="loadingWrap">
+        <div class="loading-logo-box">
+            <img src="./logo.png" alt="Logo YIQUL"
+                onerror="this.src='https://cdn-icons-png.flaticon.com/512/2913/2913564.png'">
+        </div>
+        <div class="spinner-ring"></div>
+        <div class="loading-title">TAPAK DPD PKS LEBAK</div>
+        <div class="loading-subtitle">Taqwa-Amal-Pembinaan-Aktivitas-Kader-DPD-PKS-Lebak</div>
+
+        <div class="loading-fallback-bar" id="loadingFallback">
+            <button type="button" class="btn-reload" onclick="reloadFrame()">
+                <i class="fa-solid fa-rotate-right"></i> Muat Ulang Aplikasi
+            </button>
+            <a class="link-direct"
+                href="https://script.google.com/macros/s/AKfycbxhJH0OyuiY7nUxZ6CanvuPK8S3z2Cl4UiPzZUa9-tqsvmg_cAZCgKRTEpscL0nSUF3/exec"
+                target="_blank" rel="noopener noreferrer">
+                Buka langsung di tab baru <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Iframe ke Google Apps Script Web App Aktif -->
+    <iframe id="app-frame"
+        src="https://script.google.com/macros/s/AKfycbxJuNC9DzSd3CuZXx3lhiFK-3AfM6rzn4QotCACaUrUfHF7zQkwiwyuoLMxxSTWhvA/exec"
+        allow="camera; microphone; geolocation; clipboard-read; clipboard-write; fullscreen" onload="onFrameLoaded()">
+    </iframe>
+
+    <!-- PWA Install Banner -->
+    <div id="pwa-banner">
+        <div class="pwa-banner-content">
+            <div class="pwa-banner-icon">
+                <img src="./logo.png" alt="Logo">
+            </div>
+            <div class="pwa-banner-text">
+                <h4>Tapak Lebak</h4>
+                <p>Pasang di Layar Utama HP / Laptop untuk akses instan</p>
+            </div>
+        </div>
+        <div class="pwa-banner-actions">
+            <button id="pwa-install-btn" class="btn-pwa-install">Install</button>
+            <button id="pwa-close-btn" class="btn-pwa-close" aria-label="Tutup Banner">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        const appFrame = document.getElementById('app-frame');
+        const loadingWrap = document.getElementById('loadingWrap');
+        const loadingFallback = document.getElementById('loadingFallback');
+        let isLoaded = false;
+
+        function onFrameLoaded() {
+            isLoaded = true;
+            if (loadingWrap) {
+                loadingWrap.classList.add('is-hidden');
+            }
+        }
+
+        function reloadFrame() {
+            if (loadingWrap) {
+                loadingWrap.classList.remove('is-hidden');
+            }
+            if (loadingFallback) {
+                loadingFallback.style.display = 'none';
+            }
+            if (appFrame) {
+                appFrame.src = appFrame.src;
+            }
+            startFallbackTimer();
+        }
+
+        function startFallbackTimer() {
+            setTimeout(function () {
+                if (!isLoaded && loadingFallback) {
+                    loadingFallback.style.display = 'flex';
+                }
+            }, 7500);
+        }
+
+        startFallbackTimer();
+
+        // PWA Install Prompt Handler
+        let deferredPrompt;
+        const pwaBanner = document.getElementById('pwa-banner');
+        const pwaInstallBtn = document.getElementById('pwa-install-btn');
+        const pwaCloseBtn = document.getElementById('pwa-close-btn');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            if (pwaBanner) {
+                pwaBanner.style.display = 'flex';
+            }
+        });
+
+        if (pwaInstallBtn) {
+            pwaInstallBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    if (outcome === 'accepted' && pwaBanner) {
+                        pwaBanner.style.display = 'none';
+                    }
+                    deferredPrompt = null;
+                }
+            });
+        }
+
+        if (pwaCloseBtn) {
+            pwaCloseBtn.addEventListener('click', () => {
+                if (pwaBanner) {
+                    pwaBanner.style.display = 'none';
+                }
+            });
+        }
+
+        // Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function (reg) {
+                        console.log('PWA ServiceWorker registered with scope:', reg.scope);
+                    })
+                    .catch(function (error) {
+                        console.warn('ServiceWorker registration error:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+
+</html>
