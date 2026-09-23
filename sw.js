@@ -1,4 +1,4 @@
-const CACHE_NAME = 'TAPAK-LEBAK-PKS-pwa-v1';
+const CACHE_NAME = 'TAPAK-LEBAK-DPD-PKS-pwa-v1';
 const URLS_TO_CACHE = [
   './',
   './index.html',
