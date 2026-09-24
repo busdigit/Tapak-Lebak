@@ -682,17 +682,6 @@
     var toggleDemoDrawer = window.toggleDemoDrawer;
 
     // Global function safety stubs to guarantee zero ReferenceError during load
-    window.openModal = function (id) { if (typeof window.doOpenModal === 'function') return window.doOpenModal(id); const el = document.getElementById(id); if (el) { el.classList.add('active'); document.body.style.overflow = 'hidden'; } };
-    window.closeModal = function (id) { if (typeof window.doCloseModal === 'function') return window.doCloseModal(id); if (id) { const el = document.getElementById(id); if (el) el.classList.remove('active'); } else { document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active')); } document.body.style.overflow = ''; };
-    window.openModalKader = function () { if (typeof window.doOpenModalKader === 'function') return window.doOpenModalKader(); window.openModal('modalKader'); };
-    window.openModalUPA = function (id) { if (typeof window.doOpenModalUPA === 'function') return window.doOpenModalUPA(id); window.openModal('modalUPA'); };
-    window.openModalAgenda = function (id) { if (typeof window.doOpenModalAgenda === 'function') return window.doOpenModalAgenda(id); window.openModal('modalAgenda'); };
-    window.openModalPresensi = function (id) { if (typeof window.doOpenModalPresensi === 'function') return window.doOpenModalPresensi(id); window.openModal('modalPresensi'); };
-    window.openModalWilayah = function (id) { if (typeof window.doOpenModalWilayah === 'function') return window.doOpenModalWilayah(id); window.openModal('modalWilayah'); };
-    window.openModalMutabaah = function (id) { if (typeof window.doOpenModalMutabaah === 'function') return window.doOpenModalMutabaah(id); window.openModal('modalMutabaah'); };
-    window.openModalRekrutmen = function (id) { if (typeof window.doOpenModalRekrutmen === 'function') return window.doOpenModalRekrutmen(id); window.openModal('modalRekrutmen'); };
-    window.openModalMutasi = function (id) { if (typeof window.doOpenModalMutasi === 'function') return window.doOpenModalMutasi(id); window.openModal('modalMutasi'); };
-    window.openModalLaporanBKAP = function (id) { if (typeof window.doOpenModalLaporanBKAP === 'function') return window.doOpenModalLaporanBKAP(id); window.openModal('modalLaporanBKAP'); };
     window.filterKaderList = function () { if (typeof window.doFilterKaderList === 'function') return window.doFilterKaderList(); };
     window.changeActiveRole = function (role) { if (typeof window.doChangeActiveRole === 'function') return window.doChangeActiveRole(role); };
     window.loadMoreKader = function () { if (typeof window.doLoadMoreKader === 'function') return window.doLoadMoreKader(); };
@@ -10092,25 +10081,36 @@
       const filterKecUpa = document.getElementById('filterKecamatanUpa');
       const filterKecRek = document.getElementById('filterKecamatanRekrutmen');
       const rekKec = document.getElementById('rekKecamatan');
-      const presensiKec = document.getElementById('presensiFilterKecamatan');
 
-      let optWilayahWithDapil = '<option value="">Semua Kecamatan</option>';
-      let optWilayahSimple = '<option value="">-- Pilih Kecamatan --</option>';
+      if (filterKec) filterKec.innerHTML = '<option value="">Semua Kecamatan</option>';
+      if (kaderKec) kaderKec.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+      if (upaKec) upaKec.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
+      if (filterKecUpa) filterKecUpa.innerHTML = '<option value="">Semua Kecamatan</option>';
+      if (filterKecRek) filterKecRek.innerHTML = '<option value="">Semua Kecamatan</option>';
+      if (rekKec) rekKec.innerHTML = '<option value="">-- Pilih Kecamatan --</option>';
 
-      (state.wilayahList || []).forEach(k => {
-        const nama = k.nama || k.Kecamatan || '';
-        const dapil = k.dapil || k.Dapil || '';
-        optWilayahWithDapil += `<option value="${nama}">${nama} (${dapil})</option>`;
-        optWilayahSimple += `<option value="${nama}">${nama}</option>`;
+      state.wilayahList.forEach(k => {
+        if (filterKec) filterKec.innerHTML += `<option value="${k.nama}">${k.nama} (${k.dapil})</option>`;
+        if (kaderKec) kaderKec.innerHTML += `<option value="${k.nama}">${k.nama}</option>`;
+        if (upaKec) upaKec.innerHTML += `<option value="${k.nama}">${k.nama}</option>`;
+        if (filterKecUpa) filterKecUpa.innerHTML += `<option value="${k.nama}">${k.nama} (${k.dapil})</option>`;
+        if (filterKecRek) filterKecRek.innerHTML += `<option value="${k.nama}">${k.nama} (${k.dapil})</option>`;
+        if (rekKec) rekKec.innerHTML += `<option value="${k.nama}">${k.nama}</option>`;
       });
 
-      if (filterKec) { filterKec.innerHTML = optWilayahWithDapil; filterKec.value = ''; }
-      if (kaderKec) { kaderKec.innerHTML = optWilayahSimple; }
-      if (upaKec) { upaKec.innerHTML = optWilayahSimple; }
-      if (filterKecUpa) { filterKecUpa.innerHTML = optWilayahWithDapil; filterKecUpa.value = ''; }
-      if (filterKecRek) { filterKecRek.innerHTML = optWilayahWithDapil; filterKecRek.value = ''; }
-      if (rekKec) { rekKec.innerHTML = optWilayahSimple; }
-      if (presensiKec) { presensiKec.innerHTML = optWilayahWithDapil; presensiKec.value = ''; }
+      if (filterKec) filterKec.value = '';
+      if (filterKecUpa) filterKecUpa.value = '';
+      if (filterKecRek) filterKecRek.value = '';
+
+      // Dropdown Kecamatan di Presensi
+      const presensiKec = document.getElementById('presensiFilterKecamatan');
+      if (presensiKec) {
+        presensiKec.innerHTML = '<option value="">Semua Kecamatan</option>';
+        state.wilayahList.forEach(k => {
+          presensiKec.innerHTML += `<option value="${k.nama}">${k.nama} (${k.dapil})</option>`;
+        });
+        presensiKec.value = '';
+      }
 
       // Dropdown UPA di Form Kader, Agenda, & Presensi
       updateUpaDropdown();
@@ -10131,65 +10131,66 @@
       });
 
       if (rekPJKader) {
-        let opt = '<option value="">-- Pilih Kader PJ (Madya / Dewasa) --</option>';
+        rekPJKader.innerHTML = '<option value="">-- Pilih Kader PJ (Madya / Dewasa) --</option>';
         if (allowedPjList.length === 0) {
-          opt += '<option value="" disabled>Belum ada kader Madya/Dewasa terdaftar</option>';
+          rekPJKader.innerHTML += '<option value="" disabled>Belum ada kader Madya/Dewasa terdaftar</option>';
         } else {
           allowedPjList.forEach(k => {
-            opt += `<option value="${k.ID}">${k.Nama} [${k.Jenjang}] - ${k.Kecamatan || 'Lebak'}</option>`;
+            rekPJKader.innerHTML += `<option value="${k.ID}">${k.Nama} [${k.Jenjang}] - ${k.Kecamatan || 'Lebak'}</option>`;
           });
         }
-        rekPJKader.innerHTML = opt;
       }
 
       if (filterPJRek) {
-        let opt = '<option value="">Semua PJ (Madya/Dewasa)</option>';
+        filterPJRek.innerHTML = '<option value="">Semua PJ (Madya/Dewasa)</option>';
         allowedPjList.forEach(k => {
-          opt += `<option value="${k.ID}">${k.Nama} (${k.Jenjang})</option>`;
+          filterPJRek.innerHTML += `<option value="${k.ID}">${k.Nama} (${k.Jenjang})</option>`;
         });
-        filterPJRek.innerHTML = opt;
       }
 
       // Dropdown semua kader untuk Mutasi Keluar
       if (mutasiPilihKader) {
-        let opt = '<option value="">-- Pilih Kader yang Mutasi Keluar --</option>';
+        mutasiPilihKader.innerHTML = '<option value="">-- Pilih Kader yang Mutasi Keluar --</option>';
         (state.kaderList || []).forEach(k => {
-          opt += `<option value="${k.ID}">${k.Nama} - ${k.Jenjang} (${k.Kecamatan})</option>`;
+          mutasiPilihKader.innerHTML += `<option value="${k.ID}">${k.Nama} - ${k.Jenjang} (${k.Kecamatan})</option>`;
         });
-        mutasiPilihKader.innerHTML = opt;
       }
     }
 
     function updateUpaDropdown() {
       const kaderUpa = document.getElementById('kaderUpa');
-      const agendaUpaSelect = document.getElementById('agendaUpaSelect');
-      const presensiFilterUpa = document.getElementById('presensiFilterUpa');
-      const mtbSelect = document.getElementById('mtbKaderSelect');
-
-      if (kaderUpa || agendaUpaSelect || presensiFilterUpa) {
-        let upaOpts = '';
-        (state.upaList || []).forEach(u => {
-          upaOpts += `<option value="${u.ID}">${u.NamaUPA} (${u.Pembimbing})</option>`;
+      if (kaderUpa) {
+        kaderUpa.innerHTML = '<option value="">-- Belum Masuk UPA --</option>';
+        state.upaList.forEach(u => {
+          kaderUpa.innerHTML += `<option value="${u.ID}">${u.NamaUPA} (${u.Pembimbing})</option>`;
         });
-
-        if (kaderUpa) {
-          kaderUpa.innerHTML = '<option value="">-- Belum Masuk UPA --</option>' + upaOpts;
-        }
-        if (agendaUpaSelect) {
-          agendaUpaSelect.innerHTML = '<option value="">-- Semua Kelompok / Presensi Bebas --</option>' + upaOpts;
-        }
-        if (presensiFilterUpa) {
-          presensiFilterUpa.innerHTML = '<option value="">Semua Kader (Semua UPA)</option>' + upaOpts;
-        }
       }
 
-      // Dropdown Kader di Mutabaah (Dioptimalkan menggunakan string concatenation instan <1ms)
-      if (mtbSelect) {
-        let optKader = '<option value="">-- Pilih Kader --</option>';
-        (state.kaderList || []).forEach(k => {
-          optKader += `<option value="${k.ID}">${k.Nama} - ${k.Jenjang} (${k.Kecamatan})</option>`;
+      // Dropdown UPA di Form Agenda
+      const agendaUpaSelect = document.getElementById('agendaUpaSelect');
+      if (agendaUpaSelect) {
+        agendaUpaSelect.innerHTML = '<option value="">-- Semua Kelompok / Presensi Bebas --</option>';
+        state.upaList.forEach(u => {
+          agendaUpaSelect.innerHTML += `<option value="${u.ID}">${u.NamaUPA} (${u.Pembimbing})</option>`;
         });
-        mtbSelect.innerHTML = optKader;
+      }
+
+      // Dropdown Filter UPA di Modal Presensi
+      const presensiFilterUpa = document.getElementById('presensiFilterUpa');
+      if (presensiFilterUpa) {
+        presensiFilterUpa.innerHTML = '<option value="">Semua Kader (Semua UPA)</option>';
+        state.upaList.forEach(u => {
+          presensiFilterUpa.innerHTML += `<option value="${u.ID}">${u.NamaUPA} (${u.Pembimbing})</option>`;
+        });
+      }
+
+      // Dropdown Kader di Mutabaah
+      const mtbSelect = document.getElementById('mtbKaderSelect');
+      if (mtbSelect) {
+        mtbSelect.innerHTML = '<option value="">-- Pilih Kader --</option>';
+        state.kaderList.forEach(k => {
+          mtbSelect.innerHTML += `<option value="${k.ID}">${k.Nama} - ${k.Jenjang} (${k.Kecamatan})</option>`;
+        });
       }
     }
 
@@ -11125,12 +11126,12 @@
 
       const progressContainer = document.getElementById('jenjangProgressList');
       if (progressContainer) {
-        let progressHtml = '';
+        progressContainer.innerHTML = '';
         state.jenjangList.forEach(j => {
           const count = jenjangCounts[j];
           const pct = Math.round((count / (totalKader || 1)) * 100);
           const color = jenjangColors[j] || 'var(--primary)';
-          progressHtml += `
+          progressContainer.innerHTML += `
             <div>
               <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">
                 <span style="display: flex; align-items: center; gap: 6px;">
@@ -11145,7 +11146,6 @@
             </div>
           `;
         });
-        progressContainer.innerHTML = progressHtml;
       }
 
       // 7. Agenda Pembinaan Terdekat
@@ -14574,11 +14574,10 @@
       // Pastikan dropdown kecamatan di modal picker terisi
       const pickerKec = document.getElementById('pickerKaderKecamatan');
       if (pickerKec && pickerKec.options.length <= 1) {
-        let optHtml = '<option value="">Semua Kecamatan</option>';
+        pickerKec.innerHTML = '<option value="">Semua Kecamatan</option>';
         (state.wilayahList || []).forEach(w => {
-          optHtml += `<option value="${w.nama}">${w.nama} (${w.dapil})</option>`;
+          pickerKec.innerHTML += `<option value="${w.nama}">${w.nama} (${w.dapil})</option>`;
         });
-        pickerKec.innerHTML = optHtml;
       }
 
       const searchInput = document.getElementById('pickerKaderSearch');
@@ -16215,7 +16214,6 @@
     try { if (typeof clearMtbKaderSearch !== 'undefined') window.clearMtbKaderSearch = clearMtbKaderSearch; } catch (e) { }
     try { if (typeof closeMobileMenu !== 'undefined') window.closeMobileMenu = closeMobileMenu; } catch (e) { }
     try { if (typeof closeModal !== 'undefined') window.closeModal = closeModal; } catch (e) { }
-    try { if (typeof openModal !== 'undefined') window.openModal = openModal; } catch (e) { }
     try { if (typeof deleteAgenda !== 'undefined') window.deleteAgenda = deleteAgenda; } catch (e) { }
     try { if (typeof deleteKader !== 'undefined') window.deleteKader = deleteKader; } catch (e) { }
     try { if (typeof deleteLaporanBKAP !== 'undefined') window.deleteLaporanBKAP = deleteLaporanBKAP; } catch (e) { }
